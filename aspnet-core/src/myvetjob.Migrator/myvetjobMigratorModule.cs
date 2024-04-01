@@ -6,6 +6,7 @@ using Abp.Reflection.Extensions;
 using myvetjob.Configuration;
 using myvetjob.EntityFrameworkCore;
 using myvetjob.Migrator.DependencyInjection;
+using System;
 
 namespace myvetjob.Migrator
 {
@@ -25,7 +26,7 @@ namespace myvetjob.Migrator
 
         public override void PreInitialize()
         {
-            Configuration.DefaultNameOrConnectionString = _appConfiguration.GetConnectionString(
+            Configuration.DefaultNameOrConnectionString = Environment.GetEnvironmentVariable(
                 myvetjobConsts.ConnectionStringName
             );
 

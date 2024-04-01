@@ -35,7 +35,7 @@ namespace myvetjob
 
         public override void PreInitialize()
         {
-            Configuration.DefaultNameOrConnectionString = _appConfiguration.GetConnectionString(
+            Configuration.DefaultNameOrConnectionString = Environment.GetEnvironmentVariable(
                 myvetjobConsts.ConnectionStringName
             );
 

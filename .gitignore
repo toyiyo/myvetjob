@@ -255,3 +255,5 @@ src/myvetjob.Web.Mvc/secrets.json
 src/myvetjob.Web.Host/secrets.json
 src/myvetjob.Migrator/secrets.json
 aspnet-core/src/myvetjob.Web.Mvc/App_Data/Logs/Logs.txt
+.vscode/launch.json
+aspnet-core/src/myvetjob.Web.Mvc/App_Data/Logs/Logs.txt.1
