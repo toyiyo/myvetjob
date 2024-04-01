@@ -1,0 +1,50 @@
+﻿@using Abp.Configuration.Startup
+@using Abp.Web.Security.AntiForgery
+@using myvetjob
+@using myvetjob.Web.Resources
+@inject IAbpAntiForgeryManager AbpAntiForgeryManager
+@inject IWebResourceManager WebResourceManager
+@inject ILanguageManager LanguageManager
+@inject IMultiTenancyConfig MultiTenancyConfig
+@{
+    Layout = null;
+    AbpAntiForgeryManager.SetCookie(Context);
+
+    var pageTitle = !string.IsNullOrWhiteSpace(ViewBag.Title) ? ViewBag.Title + " / " : "";
+    pageTitle += "myvetjob";
+}
+<!DOCTYPE html>
+<html lang="@LanguageManager.CurrentLanguage.Name">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>@pageTitle</title>
+
+    @await Html.PartialAsync("_Styles.cshtml")
+    @RenderSection("styles", required: false)
+</head>
+
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="#">
+    <img src="~/img/logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
+     MyVetJob
+  </a>
+  <ul class="nav justify-content-end">
+    <li class="nav-item mr-3">
+      <a class="nav-link btn btn-outline-success" href="@Url.Action("Login", "Account")">@L("Login")</a>
+    </li>
+    <li class="nav-item mr-3">
+      <a class="nav-link btn btn-outline-danger" href="#">@L("PostJob")</a>
+    </li>
+</nav>
+<body class="hold-transition">
+
+                @RenderBody()
+
+    @await Html.PartialAsync("_Scripts.cshtml")
+    @RenderSection("scripts", required: false)
+    @WebResourceManager.RenderScripts()
+</body>
+</html>
