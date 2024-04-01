@@ -17,6 +17,7 @@ using myvetjob.Web.Resources;
 using Abp.AspNetCore.SignalR.Hubs;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.WebEncoders;
+using Abp.Timing;
 
 namespace myvetjob.Web.Startup
 {
@@ -29,6 +30,7 @@ namespace myvetjob.Web.Startup
         {
             _hostingEnvironment = env;
             _appConfiguration = env.GetAppConfiguration();
+            Clock.Provider = ClockProviders.Utc;
         }
 
         public void ConfigureServices(IServiceCollection services)
