@@ -6,7 +6,7 @@
         //Desktop notification
         Push.create("myvetjob", {
             body: userNotification.notification.data.message,
-            icon: abp.appPath + 'img/myvetjob-logo.png',
+            icon: abp.appPath + 'img/logo.png',
             timeout: 6000,
             onClick: function () {
                 window.focus();
