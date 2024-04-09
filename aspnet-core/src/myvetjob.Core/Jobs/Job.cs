@@ -8,7 +8,7 @@ using myvetjob.Authorization.Users;
 
 namespace myvetjob.Jobs
 {
-    [Index(nameof(CompanyName), nameof(Position), nameof(JobLocation), nameof(Description),nameof(OrderStatus))]
+    [Index(nameof(CompanyName), nameof(Position), nameof(JobLocation), nameof(OrderStatus))]
     public class Job : FullAuditedEntity
     {
         public const int MaxPositionLength = 500; //todo: max length should be defined in the configuration

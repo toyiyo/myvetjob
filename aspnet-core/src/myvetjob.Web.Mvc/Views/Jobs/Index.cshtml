@@ -1,4 +1,7 @@
+@using Abp.Application.Services.Dto
+@using myvetjob.Jobs
 @using myvetjob.Web.Startup
+@model PagedResultDto<JobDto>
 
 @{
     ViewBag.Title = L("Jobs");
@@ -36,7 +39,32 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        Hello from the Jobs page
+                        @foreach (var job in Model.Items)
+                        {
+                            <div class="card shadow">
+                                <div class="card-body d-flex p-4 bg-light">
+                                    <div class="pr-4">
+                                        <img class="img-fluid" alt="" src="@job.ApplyUrl">
+                                    </div>
+                                    <div>
+                                        <h4 class="h5">
+                                            <div class="text-dark">
+                                                <a rel="noopener noreferrer" class="font-weight-bold text-decoration-none text-dark" id="@job.Id" href="/job-board/@job.Id">@job.Position</a>
+                                            </div>
+                                        </h4>
+                                        <div class="text-muted">@job.CompanyName</div>
+                                        <div class="d-flex flex-wrap pt-2 text-muted small">
+                                            <span class="p-1 mr-4"><i class="bi bi-geo-fill"></i> @job.JobLocation</span>
+                                            <span class="p-1 mr-4"><i class="bi bi-cash-stack"></i> @job.MinSalary - @job.MaxSalary</span>
+                                            <span class="p-1 mr-4"><i class="bi bi-clock-fill"></i> Apply by @job.ExpireDate.ToString("MMM dd yyyy")</span>
+                                        </div>
+                                        <div class="d-flex flex-wrap pt-2 text-muted">
+                                            <span class="p-1 mr-4 text-sm leading-4"><i class="bi bi-person-fill"></i> @job.EmploymentType.ToString() </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
