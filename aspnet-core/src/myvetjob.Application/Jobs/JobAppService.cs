@@ -5,11 +5,11 @@ using Abp.Application.Services.Dto;
 namespace myvetjob.Jobs
 {
 
-    public class JobAppServicePublic : myvetjobAppServiceBase, IJobAppServicePublic
+    public class JobAppService : myvetjobAppServiceBase, IJobAppService
     {
         private readonly IJobManager _jobManager;
 
-        public JobAppServicePublic(IJobManager jobManager)
+        public JobAppService(IJobManager jobManager)
         {
             _jobManager = jobManager;
         }

@@ -8,9 +8,9 @@ namespace myvetjob.Web.Controllers
 {
     public class JobsController : myvetjobControllerBase
     {
-        private IJobAppServicePublic _jobAppService;
+        private JobAppService _jobAppService;
 
-        public JobsController(IJobAppServicePublic jobAppService)
+        public JobsController(JobAppService jobAppService)
         {
             _jobAppService = jobAppService;
         }
