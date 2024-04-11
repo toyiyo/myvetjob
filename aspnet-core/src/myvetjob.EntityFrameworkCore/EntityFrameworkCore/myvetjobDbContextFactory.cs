@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using myvetjob.Configuration;
 using myvetjob.Web;
+using System;
 
 namespace myvetjob.EntityFrameworkCore
 {
@@ -21,7 +22,7 @@ namespace myvetjob.EntityFrameworkCore
              */
             var configuration = AppConfigurations.Get(WebContentDirectoryFinder.CalculateContentRootFolder());
 
-            myvetjobDbContextConfigurer.Configure(builder, configuration.GetConnectionString(myvetjobConsts.ConnectionStringName));
+            myvetjobDbContextConfigurer.Configure(builder, Environment.GetEnvironmentVariable(myvetjobConsts.ConnectionStringName));
 
             return new myvetjobDbContext(builder.Options);
         }

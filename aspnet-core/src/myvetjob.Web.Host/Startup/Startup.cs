@@ -17,6 +17,7 @@ using Abp.AspNetCore.SignalR.Hubs;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.IO;
+using Abp.Timing;
 
 namespace myvetjob.Web.Host.Startup
 {
@@ -33,6 +34,7 @@ namespace myvetjob.Web.Host.Startup
         {
             _hostingEnvironment = env;
             _appConfiguration = env.GetAppConfiguration();
+            Clock.Provider = ClockProviders.Utc;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -131,15 +133,16 @@ namespace myvetjob.Web.Host.Startup
                     {
                         Name = "myvetjob",
                         Email = string.Empty,
-                        Url = new Uri("https://twitter.com/aspboilerplate"),
+                        Url = new Uri("https://myvetjob.com"),
                     },
                     License = new OpenApiLicense
                     {
                         Name = "MIT License",
-                        Url = new Uri("https://github.com/aspnetboilerplate/aspnetboilerplate/blob/dev/LICENSE"),
+                        Url = new Uri("https://github.com/toyiyo/myvetjob/blob/main/LICENSE"),
                     }
                 });
                 options.DocInclusionPredicate((docName, description) => true);
+                options.UseAllOfToExtendReferenceSchemas();
 
                 // Define the BearerAuth scheme that's in use
                 options.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme()

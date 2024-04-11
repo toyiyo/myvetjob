@@ -6,7 +6,7 @@ namespace myvetjob
     {
         public const string LocalizationSourceName = "myvetjob";
 
-        public const string ConnectionStringName = "Default";
+        public const string ConnectionStringName = "myvetjobDb";
 
         public const bool MultiTenancyEnabled = false;
 

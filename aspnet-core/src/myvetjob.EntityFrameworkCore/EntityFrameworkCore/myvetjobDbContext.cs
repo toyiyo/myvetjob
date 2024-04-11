@@ -4,12 +4,14 @@ using myvetjob.Authorization.Roles;
 using myvetjob.Authorization.Users;
 using myvetjob.MultiTenancy;
 using Abp.Localization;
+using myvetjob.Jobs;
 
 namespace myvetjob.EntityFrameworkCore
 {
     public class myvetjobDbContext : AbpZeroDbContext<Tenant, Role, User, myvetjobDbContext>
     {
         /* Define a DbSet for each entity of the application */
+        public DbSet<Job> Jobs { get; set; }
 
         public myvetjobDbContext(DbContextOptions<myvetjobDbContext> options)
             : base(options)
