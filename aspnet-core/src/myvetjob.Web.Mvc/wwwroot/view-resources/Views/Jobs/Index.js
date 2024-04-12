@@ -2,7 +2,6 @@ $(function () {
   "use strict";
   var page = 1; // Start from page 1
   var inProgress = false; // To prevent multiple simultaneous requests
-  var _jobService = abp.services.app.job; // Your job service
 
   $(window).scroll(function () {
     if (
@@ -19,6 +18,8 @@ $(function () {
     abp.ui.setBusy($(".job-openings"));
     var form = $(this);
     var url = form.attr("action");
+
+    page = 1; // Reset the page variable
 
     $.ajax({
       type: "GET",
@@ -38,12 +39,11 @@ $(function () {
     inProgress = true;
     abp.ui.setBusy($(".job-openings")); // Set the card body as busy during the request
 
-    var formData = $('#jobFilterForm').serialize();
+    var formData = $("#jobFilterForm").serialize();
     var dataObject = new URLSearchParams(formData);
 
-    dataObject.append('skipCount', (page - 1) * 10);
-    dataObject.append('maxResultCount', 10); // Replace 10 with your actual page size
-
+    dataObject.append("skipCount", (page - 1) * 10);
+    dataObject.append("maxResultCount", 10); // Replace 10 with your actual page size
 
     $.ajax({
       url: "/Jobs/Index",
