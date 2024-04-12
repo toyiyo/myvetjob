@@ -57,10 +57,12 @@ namespace myvetjob.Jobs
         private IQueryable<Job> GetJobsQuery(GetAllJobsInput input)
         {
             var query = _jobRepository.GetAll()
-            .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), j => j.CompanyName.Contains(input.Keyword) || j.Position.Contains(input.Keyword))
+            .WhereIf(!input.CompanyName.IsNullOrWhiteSpace(), j => j.CompanyName.Contains(input.CompanyName) || j.Position.Contains(input.CompanyName))
             .WhereIf(input.EmploymentType.HasValue, j => j.EmploymentType == input.EmploymentType.Value)
             .WhereIf(input.OrderStatus.HasValue, j => j.OrderStatus == input.OrderStatus.Value)
-            .WhereIf(!input.IncludeExpiredJobs, j => j.ExpireDate > Clock.Now);
+            .WhereIf(!input.IncludeExpiredJobs, j => j.ExpireDate > Clock.Now)
+            .WhereIf(input.MinSalary.HasValue, j => j.MinSalary >= input.MinSalary.Value)
+            .WhereIf(input.CreatedWithinDays.HasValue, j => j.CreationTime >= Clock.Now.AddDays(-input.CreatedWithinDays.Value));
 
             return query;
         }

@@ -22,6 +22,7 @@
                 <span class="p-1 mr-4"><i class="fas fa-money-bill-wave"></i>  @job.MinSalary.ToString("C", CultureInfo.CreateSpecificCulture("en-US")) - @job.MaxSalary.ToString("C", CultureInfo.CreateSpecificCulture("en-US"))</span>
                 <span class="p-1 mr-4"><i class="fas fa-stopwatch"></i>  Apply by @job.ExpireDate.ToString("MMM dd yyyy")</span>
                 <span class="p-1 mr-4 text-sm leading-4"><i class="fas fa-funnel-dollar"></i>  @job.EmploymentType.ToString() </span>
+                <span class="p-1 mr-4"data-toggle="tooltip" title="@job.CreationTime.ToString("MMM dd yyyy")"><i class="fas fa-clock"></i> @((DateTime.Now - job.CreationTime).Days > 0 ? (DateTime.Now - job.CreationTime).Days + " days ago" : "Today")</span>
             </div>
         </div>
         <div class="ml-auto align-self-end">

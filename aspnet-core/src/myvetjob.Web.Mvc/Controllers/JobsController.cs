@@ -16,13 +16,19 @@ namespace myvetjob.Web.Controllers
             _jobAppService = jobAppService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<ActionResult> Index(GetActiveJobsInput input)
         {
             try
             {
-                // Initial load of active jobs, we do not filter by keyword or employment type
-                var jobs = await _jobAppService.GetActiveJobsAsync(new GetActiveJobsInput());
-                return View(jobs);
+                var jobs = await _jobAppService.GetActiveJobsAsync(input);
+                if (Request.IsAjaxRequest())
+                {
+                    return PartialView("_JobPartial", jobs);
+                }
+                else
+                {
+                    return View(jobs);
+                }
             }
             catch (ArgumentNullException) { return new NotFoundResult(); }
             catch (Abp.Domain.Entities.EntityNotFoundException) { return new NotFoundResult(); }
@@ -30,19 +36,6 @@ namespace myvetjob.Web.Controllers
             {
                 Logger.Error(ex.Message);
                 return View();
-            }
-        }
-
-        public async Task<ActionResult> GetActiveJobs(GetActiveJobsInput input)
-        {
-            var jobs = await _jobAppService.GetActiveJobsAsync(input);
-            if (Request.IsAjaxRequest())
-            {
-                return PartialView("_JobPartial", jobs);
-            }
-            else
-            {
-                return View(jobs);
             }
         }
     }

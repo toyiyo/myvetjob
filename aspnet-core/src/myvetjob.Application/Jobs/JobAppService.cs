@@ -26,10 +26,13 @@ namespace myvetjob.Jobs
         {
             var getAllJobsInput = new GetAllJobsInput
             {
-                Keyword = input.Keyword,
+                CompanyName = input.CompanyName,
+                Position = input.Position,
                 EmploymentType = input.EmploymentType,
                 IncludeExpiredJobs = false,
                 OrderStatus = OrderStatus.Paid,
+                MinSalary = input.MinSalary,
+                CreatedWithinDays = input.CreatedWithinDays,
                 SkipCount = input.SkipCount,
                 MaxResultCount = input.MaxResultCount,
                 Sorting = input.Sorting,

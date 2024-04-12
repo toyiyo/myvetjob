@@ -1,0 +1,57 @@
+@using myvetjob.Jobs
+
+<form id="jobFilterForm" class="form">
+    <div class="form-row">
+        <div class="col-md-2">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
+                </div>
+                <input type="text" class="form-control rounded" name="Position" placeholder="Position">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-building"></i></span>
+                </div>
+                <input type="text" class="form-control rounded" name="CompanyName" placeholder="Company Name">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                </div>
+                <input type="text" class="form-control rounded" name="Location" placeholder="Location">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                </div>
+                <input type="number" class="form-control rounded" name="MinSalary" placeholder="Min Salary">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                </div>
+                <input type="number" class="form-control rounded" name="CreatedWithinDays" placeholder="Created Within Days">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <select class="form-control rounded" name="EmploymentType">
+                <option value="">All Employment Types</option>
+                @foreach (var type in Enum.GetValues(typeof(EmploymentType)))
+                {
+                    <option value="@type">@type</option>
+                }
+            </select>
+        </div>
+        <!-- Add the rest of the form fields here -->
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Filter</button>
+</form>
