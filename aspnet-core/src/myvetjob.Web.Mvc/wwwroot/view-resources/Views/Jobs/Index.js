@@ -16,7 +16,7 @@ $(function () {
 
   $("#jobFilterForm").on("submit", function (e) {
     e.preventDefault();
-
+    abp.ui.setBusy($(".job-openings"));
     var form = $(this);
     var url = form.attr("action");
 
@@ -27,6 +27,9 @@ $(function () {
       success: function (data) {
         // Insert the HTML returned by the server into the existing list of jobs
         $(".job-openings").html(data);
+      },
+      complete: function () {
+        abp.ui.clearBusy($(".job-openings"));
       },
     });
   });

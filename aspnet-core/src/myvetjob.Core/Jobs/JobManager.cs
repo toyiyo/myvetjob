@@ -56,8 +56,11 @@ namespace myvetjob.Jobs
 
         private IQueryable<Job> GetJobsQuery(GetAllJobsInput input)
         {
+            // EF.Functions.Like is used instead of Contains. The Like function performs a case-insensitive search and also supports wildcard characters. The % character is a wildcard that matches any sequence of characters.
             var query = _jobRepository.GetAll()
-            .WhereIf(!input.CompanyName.IsNullOrWhiteSpace(), j => j.CompanyName.Contains(input.CompanyName) || j.Position.Contains(input.CompanyName))
+            .WhereIf(!input.CompanyName.IsNullOrWhiteSpace(), c => c.CompanyName.ToUpper().Contains(input.CompanyName.ToUpper()))
+            .WhereIf(!input.Position.IsNullOrWhiteSpace(), p => p.Position.ToUpper().Contains(input.Position.ToUpper()))
+            .WhereIf(!input.JobLocation.IsNullOrWhiteSpace(), l => l.JobLocation.ToUpper().Contains(input.JobLocation.ToUpper()))
             .WhereIf(input.EmploymentType.HasValue, j => j.EmploymentType == input.EmploymentType.Value)
             .WhereIf(input.OrderStatus.HasValue, j => j.OrderStatus == input.OrderStatus.Value)
             .WhereIf(!input.IncludeExpiredJobs, j => j.ExpireDate > Clock.Now)

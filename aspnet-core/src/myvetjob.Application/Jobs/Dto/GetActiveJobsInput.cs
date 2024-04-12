@@ -5,6 +5,7 @@ namespace myvetjob.Jobs
     {
         public string Position { get; set; }
         public string CompanyName { get; set; }
+        public string JobLocation { get; set; }
         public EmploymentType? EmploymentType { get; set; }
         public decimal? MinSalary { get; set; }
         public int? CreatedWithinDays { get; set; }

@@ -28,6 +28,7 @@ namespace myvetjob.Jobs
             {
                 CompanyName = input.CompanyName,
                 Position = input.Position,
+                JobLocation = input.JobLocation,
                 EmploymentType = input.EmploymentType,
                 IncludeExpiredJobs = false,
                 OrderStatus = OrderStatus.Paid,
