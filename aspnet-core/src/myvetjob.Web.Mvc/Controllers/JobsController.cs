@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Abp.AspNetCore.Mvc.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using myvetjob.Controllers;
 using myvetjob.Jobs;
@@ -15,12 +16,19 @@ namespace myvetjob.Web.Controllers
             _jobAppService = jobAppService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<ActionResult> Index(GetActiveJobsInput input)
         {
             try
             {
-                var jobs = await _jobAppService.GetUnexpiredJobsAsync();
-                return View(jobs);
+                var jobs = await _jobAppService.GetActiveJobsAsync(input);
+                if (Request.IsAjaxRequest())
+                {
+                    return PartialView("_JobPartial", jobs);
+                }
+                else
+                {
+                    return View(jobs);
+                }
             }
             catch (ArgumentNullException) { return new NotFoundResult(); }
             catch (Abp.Domain.Entities.EntityNotFoundException) { return new NotFoundResult(); }
@@ -30,5 +38,5 @@ namespace myvetjob.Web.Controllers
                 return View();
             }
         }
-	}
+    }
 }

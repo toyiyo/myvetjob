@@ -156,5 +156,11 @@
     "inputFiles": [
       "wwwroot/Common/helpers.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Jobs/Index.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Jobs/Index.js"
+    ]
   }
 ]

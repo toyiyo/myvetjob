@@ -1,0 +1,35 @@
+@using System.Globalization
+@using myvetjob.Jobs
+@using Abp.Application.Services.Dto
+@model PagedResultDto<JobDto>
+
+@foreach (var job in Model.Items)
+{
+<div class="card shadow">
+    <div class="card-body d-flex p-4 bg-light">
+        <div>
+            <img class="img-fluid" style="width: 100px; height: 100px;" alt="" src="~/img/logo.png">
+        </div>
+        <div>
+            <h4 class="h5">
+                <div class="text-dark">
+                    <a rel="noopener noreferrer" class="font-weight-bold " id="@job.Id" href="/jobs/@job.Id">@job.Position</a>
+                </div>
+            </h4>
+            <div class="text-muted">@job.CompanyName</div>
+            <div class="d-flex flex-wrap pt-2 text-muted small">
+                <span class="p-1 mr-4"><i class="fas fa-map-marked-alt"></i>  @job.JobLocation</span>
+                <span class="p-1 mr-4"><i class="fas fa-money-bill-wave"></i>  @job.MinSalary.ToString("C", CultureInfo.CreateSpecificCulture("en-US")) - @job.MaxSalary.ToString("C", CultureInfo.CreateSpecificCulture("en-US"))</span>
+                <span class="p-1 mr-4"><i class="fas fa-stopwatch"></i>  Apply by @job.ExpireDate.ToString("MMM dd yyyy")</span>
+                <span class="p-1 mr-4 text-sm leading-4"><i class="fas fa-funnel-dollar"></i>  @job.EmploymentType.ToString() </span>
+                <span class="p-1 mr-4"data-toggle="tooltip" title="@job.CreationTime.ToString("MMM dd yyyy")"><i class="fas fa-clock"></i> @((DateTime.Now - job.CreationTime).Days > 0 ? (DateTime.Now - job.CreationTime).Days + " days ago" : "Today")</span>
+            </div>
+        </div>
+        <div class="ml-auto align-self-end">
+            <a href="@job.ApplyUrl" target="_blank" class="btn btn-primary">
+                Apply <i class="fas fa-external-link-alt"></i>
+            </a>
+        </div>
+    </div>
+</div>
+}

@@ -13,15 +13,34 @@ namespace myvetjob.Jobs
         {
             _jobManager = jobManager;
         }
-        public async Task<JobDto> GetUnexpiredJobByIdAsync(int jobId)
+        public async Task<JobDto> GetActiveJobByIdAsync(int jobId)
         {
-            var job = await _jobManager.GetUnexpiredJobByIdAsync(jobId);
+            var job = await _jobManager.GetAsync(jobId);
             return ObjectMapper.Map<JobDto>(job);
         }
-        public async Task<PagedResultDto<JobDto>> GetUnexpiredJobsAsync()
+        /// <summary>
+        /// Retrieves a list of active jobs asynchronously. That is, jobs that have been paid for and have not expired.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<PagedResultDto<JobDto>> GetActiveJobsAsync(GetActiveJobsInput input)
         {
-            var jobs = await _jobManager.GetUnexpiredJobsAsync();
-            var totalJobs = await _jobManager.GetCountUnexpiredJobsAsync();
+            var getAllJobsInput = new GetAllJobsInput
+            {
+                CompanyName = input.CompanyName,
+                Position = input.Position,
+                JobLocation = input.JobLocation,
+                EmploymentType = input.EmploymentType,
+                IncludeExpiredJobs = false,
+                OrderStatus = OrderStatus.Paid,
+                MinSalary = input.MinSalary,
+                CreatedWithinDays = input.CreatedWithinDays,
+                SkipCount = input.SkipCount,
+                MaxResultCount = input.MaxResultCount,
+                Sorting = input.Sorting,
+            };
+
+            var jobs = await _jobManager.GetAllAsync(getAllJobsInput);
+            var totalJobs = await _jobManager.GetAllCountAsync(getAllJobsInput);
             return new PagedResultDto<JobDto>(totalJobs, ObjectMapper.Map<List<JobDto>>(jobs));
         }
 

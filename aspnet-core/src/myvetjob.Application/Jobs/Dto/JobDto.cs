@@ -1,5 +1,6 @@
 using System;
 using Abp.AutoMapper;
+using Abp.Webhooks;
 
 namespace myvetjob.Jobs
 {
@@ -16,5 +17,6 @@ namespace myvetjob.Jobs
         public decimal MaxSalary { get; set; }
         public string ApplyUrl { get; set; }
         public DateTime ExpireDate { get; set; }
+        public DateTime CreationTime { get; set; }
     }
 }
