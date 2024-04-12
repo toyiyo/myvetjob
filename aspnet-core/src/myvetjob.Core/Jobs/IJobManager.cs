@@ -5,8 +5,8 @@ namespace myvetjob.Jobs
 {
     public interface IJobManager
     {
-        Task<int> GetCountUnexpiredJobsAsync();
-        Task<Job> GetUnexpiredJobByIdAsync(int jobId);
-        Task<List<Job>> GetUnexpiredJobsAsync();
+        Task<int> GetAllCountAsync(GetAllJobsInput input);
+        Task<Job> GetAsync(int jobId);
+        Task<IReadOnlyList<Job>> GetAllAsync(GetAllJobsInput input);
     }
 }

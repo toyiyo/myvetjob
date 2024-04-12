@@ -19,7 +19,8 @@ namespace myvetjob.Web.Controllers
         {
             try
             {
-                var jobs = await _jobAppService.GetUnexpiredJobsAsync();
+                // Initial load of active jobs, we do not filter by keyword or employment type
+                var jobs = await _jobAppService.GetActiveJobsAsync(new GetActiveJobsInput());
                 return View(jobs);
             }
             catch (ArgumentNullException) { return new NotFoundResult(); }

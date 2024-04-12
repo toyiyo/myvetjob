@@ -70,6 +70,15 @@ namespace myvetjob.Jobs
 
         public static Job Create(User user, string companyName, string position, string description, EmploymentType employmentType, string jobLocation, decimal minSalary, decimal maxSalary, string applyUrl)
         {
+            if (string.IsNullOrWhiteSpace(companyName)) throw new ArgumentException("CompanyName cannot be null or whitespace.", nameof(companyName));
+            if (string.IsNullOrWhiteSpace(position)) throw new ArgumentException("Position cannot be null or whitespace.", nameof(position));
+            if (string.IsNullOrWhiteSpace(description)) throw new ArgumentException("Description cannot be null or whitespace.", nameof(description));
+            if (string.IsNullOrWhiteSpace(jobLocation)) throw new ArgumentException("JobLocation cannot be null or whitespace.", nameof(jobLocation));
+            if (string.IsNullOrWhiteSpace(applyUrl)) throw new ArgumentException("ApplyUrl cannot be null or whitespace.", nameof(applyUrl));
+            if (minSalary < 0) throw new ArgumentException("MinSalary cannot be less than zero.", nameof(minSalary));
+            if (maxSalary < 0) throw new ArgumentException("MaxSalary cannot be less than zero.", nameof(maxSalary));
+            if (minSalary > maxSalary) throw new ArgumentException("MinSalary cannot be greater than MaxSalary.", nameof(minSalary));
+            
             var job = new Job
             {
                 CreatorUserId = user.Id,
