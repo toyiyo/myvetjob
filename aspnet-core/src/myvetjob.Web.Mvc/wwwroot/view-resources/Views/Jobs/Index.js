@@ -16,7 +16,7 @@ $(function () {
 
   function loadMoreJobs() {
     inProgress = true;
-    abp.ui.setBusy($(".card-body")); // Set the card body as busy during the request
+    abp.ui.setBusy($(".job-openings")); // Set the card body as busy during the request
 
     $.ajax({
       url: "/Jobs/GetActiveJobs",
@@ -26,11 +26,12 @@ $(function () {
       },
       success: function (data) {
         // Insert the HTML returned by the server into the existing list of jobs
-        $(".card-body").append(data);
+        $(".job-openings").append(data);
         inProgress = false;
       },
       complete: function () {
-        abp.ui.clearBusy($(".card-body")); // Clear the busy indicator
+        abp.ui.clearBusy($(".job-openings")); // Clear the busy indicator
+        inProgress = false;
       },
     });
   }
