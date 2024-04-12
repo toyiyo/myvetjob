@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Abp.AspNetCore.Mvc.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using myvetjob.Controllers;
 using myvetjob.Jobs;
@@ -31,5 +32,18 @@ namespace myvetjob.Web.Controllers
                 return View();
             }
         }
-	}
+
+        public async Task<ActionResult> GetActiveJobs(GetActiveJobsInput input)
+        {
+            var jobs = await _jobAppService.GetActiveJobsAsync(input);
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_JobPartial", jobs.Items);
+            }
+            else
+            {
+                return View(jobs);
+            }
+        }
+    }
 }
