@@ -2,14 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using Abp.Collections.Extensions;
-using Abp.Domain.Repositories;
 using Abp.Domain.Services;
-using Abp.Domain.Uow;
-using Abp.Extensions;
-using Abp.Timing;
-using Abp.Linq.Extensions;
-using Microsoft.EntityFrameworkCore;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System;
@@ -26,8 +19,8 @@ namespace myvetjob.Jobs
         {
             _httpClient = httpClient;
             _httpClient.DefaultRequestHeaders.Add("Host", "data.usajobs.gov");
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "jdelgado@toyiyo.com");
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization-Key", "Z1SflWU3jcBa/NH0x7vcEwNQ7LOrpVq+IuXY4gtRTFw=");
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", Environment.GetEnvironmentVariable("USAJOBS_USER_AGENT"));
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization-Key", Environment.GetEnvironmentVariable("USAJOBS_AUTH_KEY"));
         }
 
         /// <summary>
@@ -81,17 +74,25 @@ namespace myvetjob.Jobs
                 var usaJobs = JsonConvert.DeserializeObject<Root>(content);
 
                 // Convert the USAJobs data to your Job objects
-                var jobs = usaJobs.SearchResult.SearchResultItems.Select(usaJob => Job.Create(
-                user: new User { Id = 1 }, //hardcoded for now
-                companyName: usaJob.MatchedObjectDescriptor.OrganizationName,
-                position: usaJob.MatchedObjectDescriptor.PositionTitle,
-                description: usaJob.MatchedObjectDescriptor.UserArea.Details.GetFormattedDetails(),
-                employmentType: usaJob.MatchedObjectDescriptor.PositionSchedule.FirstOrDefault()?.ToEmploymentType() ?? EmploymentType.FullTime,
-                jobLocation: usaJob.MatchedObjectDescriptor.PositionLocationDisplay,
-                minSalary: Convert.ToDecimal(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MinimumRange),
-                maxSalary: decimal.Parse(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MaximumRange),
-                applyUrl: usaJob.MatchedObjectDescriptor.ApplyURI.FirstOrDefault()
-            )).ToList();
+                //todo: set id to the 
+                var jobs = usaJobs.SearchResult.SearchResultItems.Select(usaJob =>
+                {
+                    var job = Job.Create(
+                    user: new User { Id = 1 }, //hardcoded for now
+                    companyName: usaJob.MatchedObjectDescriptor.OrganizationName,
+                    position: usaJob.MatchedObjectDescriptor.PositionTitle,
+                    description: usaJob.MatchedObjectDescriptor.UserArea.Details.GetFormattedDetails(),
+                    employmentType: usaJob.MatchedObjectDescriptor.PositionSchedule.FirstOrDefault()?.ToEmploymentType() ?? EmploymentType.FullTime,
+                    jobLocation: usaJob.MatchedObjectDescriptor.PositionLocationDisplay,
+                    minSalary: Convert.ToDecimal(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MinimumRange),
+                    maxSalary: decimal.Parse(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MaximumRange),
+                    applyUrl: usaJob.MatchedObjectDescriptor.ApplyURI.FirstOrDefault()
+                );
+                    //need to refactor our model to include an external id and use that in the UI when available
+                    job.Id = int.Parse(usaJob.MatchedObjectDescriptor.PositionID);
+                    return job;
+                }
+                ).ToList();
 
                 return jobs;
             }
