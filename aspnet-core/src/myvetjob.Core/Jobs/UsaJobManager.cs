@@ -47,7 +47,7 @@ namespace myvetjob.Jobs
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var jobSearchResult = JsonConvert.DeserializeObject<UsaJobSearchResult>(content);
+            var jobSearchResult = JsonConvert.DeserializeObject<Root>(content);
 
             var usaJob = jobSearchResult.SearchResult.SearchResultItems.FirstOrDefault()?.MatchedObjectDescriptor;
             //map the job to our Job entity
@@ -55,7 +55,7 @@ namespace myvetjob.Jobs
                 user: new User { Id = 1 }, //hardcoded for now
                 companyName: usaJob.OrganizationName,
                 position: usaJob.PositionTitle,
-                description: usaJob.PositionFormattedDescription.FirstOrDefault()?.Content,
+                description: usaJob.UserArea.Details.GetFormattedDetails(),
                 employmentType: usaJob.PositionSchedule.FirstOrDefault()?.ToEmploymentType() ?? EmploymentType.FullTime,
                 jobLocation: usaJob.PositionLocationDisplay,
                 minSalary: Convert.ToDecimal(usaJob.PositionRemuneration.FirstOrDefault()?.MinimumRange),
@@ -78,14 +78,14 @@ namespace myvetjob.Jobs
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var usaJobs = JsonConvert.DeserializeObject<UsaJobSearchResult>(content);
+                var usaJobs = JsonConvert.DeserializeObject<Root>(content);
 
                 // Convert the USAJobs data to your Job objects
                 var jobs = usaJobs.SearchResult.SearchResultItems.Select(usaJob => Job.Create(
                 user: new User { Id = 1 }, //hardcoded for now
                 companyName: usaJob.MatchedObjectDescriptor.OrganizationName,
                 position: usaJob.MatchedObjectDescriptor.PositionTitle,
-                description: usaJob.MatchedObjectDescriptor.PositionFormattedDescription.FirstOrDefault()?.Content,
+                description: usaJob.MatchedObjectDescriptor.UserArea.Details.GetFormattedDetails(),
                 employmentType: usaJob.MatchedObjectDescriptor.PositionSchedule.FirstOrDefault()?.ToEmploymentType() ?? EmploymentType.FullTime,
                 jobLocation: usaJob.MatchedObjectDescriptor.PositionLocationDisplay,
                 minSalary: Convert.ToDecimal(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MinimumRange),
@@ -111,12 +111,8 @@ namespace myvetjob.Jobs
                 query["OrganizationName"] = input.CompanyName;
             if (!string.IsNullOrWhiteSpace(input.Position))
                 query["PositionTitle"] = input.Position;
-            if (!string.IsNullOrWhiteSpace(input.JobLocation))
-                query["LocationName"] = input.JobLocation;
-            if (input.EmploymentType.HasValue)
-                query["PositionScheduleTypeCode"] = input.EmploymentType.Value.ToString();
-            if (input.MinSalary.HasValue)
-                query["PayGradeLow"] = input.MinSalary.Value.ToString();
+            //todo: filter by location - expand on remote as boolean rather than string, min salary, recency, and employment type
+            //pagination Page=3&ResultsPerPage=50 using input skip and max result count
 
             builder.Query = query.ToString();
             return builder.ToString();

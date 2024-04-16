@@ -4,9 +4,22 @@ using System.Collections.Generic;
 
 namespace myvetjob.Jobs
 {
+    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class Details
     {
-        public string MajorDuties { get; set; }
+        public string JobSummary { get; set; }
+        public WhoMayApply WhoMayApply { get; set; }
+        public string LowGrade { get; set; }
+        public string HighGrade { get; set; }
+        public string PromotionPotential { get; set; }
+        public string OrganizationCodes { get; set; }
+        public string Relocation { get; set; }
+        public List<string> HiringPath { get; set; }
+        public string TotalOpenings { get; set; }
+        public string AgencyMarketingStatement { get; set; }
+        public string TravelCode { get; set; }
+        public string DetailStatusUrl { get; set; }
+        public List<string> MajorDuties { get; set; }
         public string Education { get; set; }
         public string Requirements { get; set; }
         public string Evaluations { get; set; }
@@ -15,36 +28,48 @@ namespace myvetjob.Jobs
         public string RequiredDocuments { get; set; }
         public string Benefits { get; set; }
         public string BenefitsUrl { get; set; }
+        public bool BenefitsDisplayDefaultText { get; set; }
         public string OtherInformation { get; set; }
         public List<string> KeyRequirements { get; set; }
-        public string JobSummary { get; set; }
-        public WhoMayApply WhoMayApply { get; set; }
-        public string LowGrade { get; set; }
-        public string HighGrade { get; set; }
+        public string WithinArea { get; set; }
+        public string CommuteDistance { get; set; }
+        public string ServiceType { get; set; }
+        public string AnnouncementClosingType { get; set; }
+        public string AgencyContactEmail { get; set; }
+        public string SecurityClearance { get; set; }
+        public string DrugTestRequired { get; set; }
+        public List<string> AdjudicationType { get; set; }
+        public bool TeleworkEligible { get; set; }
+        public bool RemoteIndicator { get; set; }
+        public string AgencyContactPhone { get; set; }
         public string SubAgencyName { get; set; }
-        public string OrganizationCodes { get; set; }
+        public string ApplyOnlineUrl { get; set; }
+        public string PreviewQuestionnaireurl { get; set; }
+        public string PositionSensitivitiy { get; set; }
+        public List<string> MCOTags { get; set; }
     }
 
-    public class GradeBucket
+    public static class DetailsExtensions
     {
-        public string RefinementName { get; set; }
-        public string RefinementCount { get; set; }
-        public string RefinementToken { get; set; }
-        public string RefinementValue { get; set; }
+        public static string GetFormattedDetails(this Details details)
+        {
+            return $"Job Summary: {details.JobSummary}\n" +
+                   $"Agency Marketing Statement: {details.AgencyMarketingStatement}\n" +
+                   $"Major Duties: {details.MajorDuties}\n" +
+                   $"Education: {details.Education}\n" +
+                   $"Requirements: {details.Requirements}\n" +
+                   $"Evaluations: {details.Evaluations}\n" +
+                   $"How To Apply: {details.HowToApply}\n" +
+                   $"What To Expect Next: {details.WhatToExpectNext}\n" +
+                   $"Required Documents: {details.RequiredDocuments}\n" +
+                   $"Other Information: {details.OtherInformation}";
+        }
     }
 
     public class JobCategory
     {
         public string Name { get; set; }
         public string Code { get; set; }
-    }
-
-    public class JobCategoryCode
-    {
-        public string RefinementName { get; set; }
-        public string RefinementCount { get; set; }
-        public string RefinementToken { get; set; }
-        public string RefinementValue { get; set; }
     }
 
     public class JobGrade
@@ -74,19 +99,11 @@ namespace myvetjob.Jobs
         public DateTime ApplicationCloseDate { get; set; }
         public List<PositionFormattedDescription> PositionFormattedDescription { get; set; }
         public UserArea UserArea { get; set; }
-    }
-
-    public class Organization
-    {
-        public string RefinementName { get; set; }
-        public string RefinementCount { get; set; }
-        public string RefinementToken { get; set; }
-        public string RefinementValue { get; set; }
+        public string SubAgency { get; set; }
     }
 
     public class PositionFormattedDescription
     {
-        public string Content { get; set; }
         public string Label { get; set; }
         public string LabelDescription { get; set; }
     }
@@ -107,14 +124,6 @@ namespace myvetjob.Jobs
         public string Code { get; set; }
     }
 
-    public class PositionOfferingTypeCode
-    {
-        public string RefinementName { get; set; }
-        public string RefinementCount { get; set; }
-        public string RefinementToken { get; set; }
-        public string RefinementValue { get; set; }
-    }
-
     public class PositionRemuneration
     {
         public string MinimumRange { get; set; }
@@ -129,54 +138,11 @@ namespace myvetjob.Jobs
         public string Code { get; set; }
     }
 
-    public static class PositionScheduleExtensions
-    {
-        public static EmploymentType ToEmploymentType(this PositionSchedule positionSchedule)
-        {
-            return positionSchedule.Code switch
-            {
-                "1" => EmploymentType.FullTime,
-                "2" => EmploymentType.PartTime,
-                "3" => EmploymentType.ShiftWork,
-                "4" => EmploymentType.Intermittent,
-                "5" => EmploymentType.JobSharing,
-                "6" => EmploymentType.MultipleSchedules,
-                _ => EmploymentType.FullTime, // Default to FullTime if the code is not recognized
-            };
-        }
-    }
-
-    public class PositionScheduleTypeCode
-    {
-        public string RefinementName { get; set; }
-        public string RefinementCount { get; set; }
-        public string RefinementToken { get; set; }
-        public string RefinementValue { get; set; }
-    }
-
-    public class Refiners
-    {
-        public List<Organization> Organization { get; set; }
-        public List<GradeBucket> GradeBucket { get; set; }
-        public List<SalaryBucket> SalaryBucket { get; set; }
-        public List<PositionOfferingTypeCode> PositionOfferingTypeCode { get; set; }
-        public List<PositionScheduleTypeCode> PositionScheduleTypeCode { get; set; }
-        public List<JobCategoryCode> JobCategoryCode { get; set; }
-    }
-
-    public class UsaJobSearchResult
+    public class Root
     {
         public string LanguageCode { get; set; }
         public SearchParameters SearchParameters { get; set; }
         public SearchResult SearchResult { get; set; }
-    }
-
-    public class SalaryBucket
-    {
-        public string RefinementName { get; set; }
-        public string RefinementCount { get; set; }
-        public string RefinementToken { get; set; }
-        public string RefinementValue { get; set; }
     }
 
     public class SearchParameters
@@ -195,14 +161,13 @@ namespace myvetjob.Jobs
     {
         public string MatchedObjectId { get; set; }
         public MatchedObjectDescriptor MatchedObjectDescriptor { get; set; }
-        public double RelevanceRank { get; set; }
+        public int RelevanceRank { get; set; }
     }
 
     public class UserArea
     {
         public Details Details { get; set; }
         public bool IsRadialSearch { get; set; }
-        public Refiners Refiners { get; set; }
         public string NumberOfPages { get; set; }
     }
 
@@ -210,6 +175,24 @@ namespace myvetjob.Jobs
     {
         public string Name { get; set; }
         public string Code { get; set; }
+    }
+
+
+    public static class PositionScheduleExtensions
+    {
+        public static EmploymentType ToEmploymentType(this PositionSchedule positionSchedule)
+        {
+            return positionSchedule.Code switch
+            {
+                "1" => EmploymentType.FullTime,
+                "2" => EmploymentType.PartTime,
+                "3" => EmploymentType.ShiftWork,
+                "4" => EmploymentType.Intermittent,
+                "5" => EmploymentType.JobSharing,
+                "6" => EmploymentType.MultipleSchedules,
+                _ => EmploymentType.FullTime, // Default to FullTime if the code is not recognized
+            };
+        }
     }
 
 }
