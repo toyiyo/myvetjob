@@ -4,12 +4,16 @@ namespace myvetjob.Jobs
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum EmploymentType
-        {
-            FullTime,
-            PartTime,
-            Contract,
-            Internship,
-            Volunteer,
-            Temporary
-        }
+    {
+        FullTime,
+        PartTime,
+        Contract,
+        Internship,
+        Volunteer,
+        Temporary,
+        ShiftWork,
+        Intermittent,
+        JobSharing,
+        MultipleSchedules
+    }
 }

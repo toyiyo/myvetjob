@@ -8,10 +8,12 @@ namespace myvetjob.Jobs
     public class JobAppService : myvetjobAppServiceBase, IJobAppService
     {
         private readonly IJobManager _jobManager;
+        private readonly IUsaJobManager _usaJobsManager;
 
-        public JobAppService(IJobManager jobManager)
+        public JobAppService(IJobManager jobManager, IUsaJobManager usaJobsManager)
         {
             _jobManager = jobManager;
+            _usaJobsManager = usaJobsManager;
         }
         public async Task<JobDto> GetActiveJobByIdAsync(int jobId)
         {
@@ -39,9 +41,10 @@ namespace myvetjob.Jobs
                 Sorting = input.Sorting,
             };
 
-            var jobs = await _jobManager.GetAllAsync(getAllJobsInput);
+            var localJobs = await _jobManager.GetAllAsync(getAllJobsInput);
+            var usaJobs = await _usaJobsManager.GetAllAsync(getAllJobsInput);
             var totalJobs = await _jobManager.GetAllCountAsync(getAllJobsInput);
-            return new PagedResultDto<JobDto>(totalJobs, ObjectMapper.Map<List<JobDto>>(jobs));
+            return new PagedResultDto<JobDto>(totalJobs, ObjectMapper.Map<List<JobDto>>(localJobs));
         }
 
     }
