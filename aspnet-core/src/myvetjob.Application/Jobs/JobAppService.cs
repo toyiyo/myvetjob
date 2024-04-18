@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
+using System.Linq;
 
 namespace myvetjob.Jobs
 {
@@ -8,10 +9,12 @@ namespace myvetjob.Jobs
     public class JobAppService : myvetjobAppServiceBase, IJobAppService
     {
         private readonly IJobManager _jobManager;
+        private readonly IUsaJobManager _usaJobsManager;
 
-        public JobAppService(IJobManager jobManager)
+        public JobAppService(IJobManager jobManager, IUsaJobManager usaJobsManager)
         {
             _jobManager = jobManager;
+            _usaJobsManager = usaJobsManager;
         }
         public async Task<JobDto> GetActiveJobByIdAsync(int jobId)
         {
@@ -38,10 +41,12 @@ namespace myvetjob.Jobs
                 MaxResultCount = input.MaxResultCount,
                 Sorting = input.Sorting,
             };
-
-            var jobs = await _jobManager.GetAllAsync(getAllJobsInput);
-            var totalJobs = await _jobManager.GetAllCountAsync(getAllJobsInput);
-            return new PagedResultDto<JobDto>(totalJobs, ObjectMapper.Map<List<JobDto>>(jobs));
+            
+            var localJobs = await _jobManager.GetAllAsync(getAllJobsInput);
+            var usaJobs = await _usaJobsManager.GetAllAsync(getAllJobsInput);
+            var allJobs = localJobs.Concat(usaJobs.Items).ToList();
+            var totalJobsCount = await _jobManager.GetAllCountAsync(getAllJobsInput) + usaJobs.TotalCount; 
+            return new PagedResultDto<JobDto>(totalJobsCount, ObjectMapper.Map<List<JobDto>>(allJobs));
         }
 
     }

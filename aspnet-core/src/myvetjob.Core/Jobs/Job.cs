@@ -68,7 +68,7 @@ namespace myvetjob.Jobs
         {
         }
 
-        public static Job Create(User user, string companyName, string position, string description, EmploymentType employmentType, string jobLocation, decimal minSalary, decimal maxSalary, string applyUrl)
+        public static Job Create(User user, string companyName, string position, string description, EmploymentType employmentType, string jobLocation, decimal minSalary, decimal maxSalary, string applyUrl, int expireDays = DefaultExpireDays)
         {
             if (string.IsNullOrWhiteSpace(companyName)) throw new ArgumentException("CompanyName cannot be null or whitespace.", nameof(companyName));
             if (string.IsNullOrWhiteSpace(position)) throw new ArgumentException("Position cannot be null or whitespace.", nameof(position));
@@ -78,7 +78,8 @@ namespace myvetjob.Jobs
             if (minSalary < 0) throw new ArgumentException("MinSalary cannot be less than zero.", nameof(minSalary));
             if (maxSalary < 0) throw new ArgumentException("MaxSalary cannot be less than zero.", nameof(maxSalary));
             if (minSalary > maxSalary) throw new ArgumentException("MinSalary cannot be greater than MaxSalary.", nameof(minSalary));
-            
+            if (expireDays < 0) throw new ArgumentException("ExpireDays cannot be less than zero.", nameof(expireDays));
+
             var job = new Job
             {
                 CreatorUserId = user.Id,
@@ -95,7 +96,7 @@ namespace myvetjob.Jobs
                 ApplyUrl = applyUrl,
                 OrderStatus = OrderStatus.Pending,
                 ApplicationCount = 0,
-                ExpireDate = Clock.Now.AddDays(DefaultExpireDays)
+                ExpireDate = Clock.Now.AddDays(expireDays)
             };
 
             return job;
