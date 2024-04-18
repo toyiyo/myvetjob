@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System;
 using myvetjob.Authorization.Users;
 using System.Web;
+using Abp.Application.Services.Dto;
 
 namespace myvetjob.Jobs
 {
@@ -42,19 +43,9 @@ namespace myvetjob.Jobs
             var content = await response.Content.ReadAsStringAsync();
             var jobSearchResult = JsonConvert.DeserializeObject<Root>(content);
 
-            var usaJob = jobSearchResult.SearchResult.SearchResultItems.FirstOrDefault()?.MatchedObjectDescriptor;
+            var usaJob = jobSearchResult.SearchResult.SearchResultItems.FirstOrDefault();
             //map the job to our Job entity
-            var job = Job.Create(
-                user: new User { Id = 1 }, //hardcoded for now
-                companyName: usaJob.OrganizationName,
-                position: usaJob.PositionTitle,
-                description: usaJob.UserArea.Details.GetFormattedDetails(),
-                employmentType: usaJob.PositionSchedule.FirstOrDefault()?.ToEmploymentType() ?? EmploymentType.FullTime,
-                jobLocation: usaJob.PositionLocationDisplay,
-                minSalary: Convert.ToDecimal(usaJob.PositionRemuneration.FirstOrDefault()?.MinimumRange),
-                maxSalary: decimal.Parse(usaJob.PositionRemuneration.FirstOrDefault()?.MaximumRange),
-                applyUrl: usaJob.ApplyURI.FirstOrDefault()
-            );
+            var job = MapUsaJobToJob(usaJob);
 
             return job;
         }
@@ -63,7 +54,7 @@ namespace myvetjob.Jobs
         /// Retrieves a list of jobs asynchronously.
         /// </summary>
         /// <returns>A task that represents the asynchronous operation. The task result contains the list of unexpired jobs.</returns>
-        public async Task<IReadOnlyList<Job>> GetAllAsync(GetAllJobsInput input)
+        public async Task<PagedResultDto<Job>> GetAllAsync(GetAllJobsInput input)
         {
             var url = BuildUrl(input);
             var response = await _httpClient.GetAsync(url);
@@ -77,24 +68,17 @@ namespace myvetjob.Jobs
                 //todo: set id to the 
                 var jobs = usaJobs.SearchResult.SearchResultItems.Select(usaJob =>
                 {
-                    var job = Job.Create(
-                    user: new User { Id = 1 }, //hardcoded for now
-                    companyName: usaJob.MatchedObjectDescriptor.OrganizationName,
-                    position: usaJob.MatchedObjectDescriptor.PositionTitle,
-                    description: usaJob.MatchedObjectDescriptor.UserArea.Details.GetFormattedDetails(),
-                    employmentType: usaJob.MatchedObjectDescriptor.PositionSchedule.FirstOrDefault()?.ToEmploymentType() ?? EmploymentType.FullTime,
-                    jobLocation: usaJob.MatchedObjectDescriptor.PositionLocationDisplay,
-                    minSalary: Convert.ToDecimal(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MinimumRange),
-                    maxSalary: decimal.Parse(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MaximumRange),
-                    applyUrl: usaJob.MatchedObjectDescriptor.ApplyURI.FirstOrDefault()
-                );
+                    Job job = MapUsaJobToJob(usaJob);
                     //need to refactor our model to include an external id and use that in the UI when available
-                    job.Id = int.Parse(usaJob.MatchedObjectDescriptor.PositionID);
+                    //job.Id = int.Parse(usaJob.MatchedObjectDescriptor.PositionID);
                     return job;
                 }
                 ).ToList();
 
-                return jobs;
+                var totalCount = usaJobs.SearchResult.SearchResultCountAll;
+                var result = new PagedResultDto<Job>(totalCount, jobs);
+
+                return result;
             }
             else
             {
@@ -102,7 +86,25 @@ namespace myvetjob.Jobs
             }
         }
 
-        private string BuildUrl(GetAllJobsInput input)
+        private static Job MapUsaJobToJob(SearchResultItem usaJob)
+        {
+            var job = Job.Create(
+                                user: new User { Id = 1 }, //hardcoded for now
+                                companyName: usaJob.MatchedObjectDescriptor.OrganizationName,
+                                position: usaJob.MatchedObjectDescriptor.PositionTitle,
+                                description: usaJob.MatchedObjectDescriptor.UserArea.Details.GetFormattedDetails(),
+                                employmentType: usaJob.MatchedObjectDescriptor.PositionSchedule.FirstOrDefault()?.ToEmploymentType() ?? EmploymentType.FullTime,
+                                jobLocation: usaJob.MatchedObjectDescriptor.PositionLocationDisplay,
+                                minSalary: Convert.ToDecimal(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MinimumRange),
+                                maxSalary: decimal.Parse(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MaximumRange),
+                                applyUrl: usaJob.MatchedObjectDescriptor.ApplyURI.FirstOrDefault(),
+                                expireDays: usaJob.MatchedObjectDescriptor.ApplicationCloseDate.Subtract(DateTime.Today).Days
+                            );
+            job.CreationTime = usaJob.MatchedObjectDescriptor.PublicationStartDate;
+            return job;
+        }
+
+        private static string BuildUrl(GetAllJobsInput input)
         {
             var builder = new UriBuilder("https://data.usajobs.gov/api/search");
             var query = HttpUtility.ParseQueryString(builder.Query);
@@ -112,16 +114,19 @@ namespace myvetjob.Jobs
                 query["OrganizationName"] = input.CompanyName;
             if (!string.IsNullOrWhiteSpace(input.Position))
                 query["PositionTitle"] = input.Position;
-            //todo: filter by location - expand on remote as boolean rather than string, min salary, recency, and employment type
-            //pagination Page=3&ResultsPerPage=50 using input skip and max result count
+            if (!string.IsNullOrWhiteSpace(input.JobLocation))
+                query["LocationName"] = input.JobLocation;
+            if (input.MinSalary.HasValue)
+                query["RemunerationMinimumAmount"] = input.MinSalary.ToString();
+            if (input.CreatedWithinDays.HasValue)
+                query["DatePosted"] = input.CreatedWithinDays.ToString();
+            if (input.MaxResultCount != 0)
+                query["ResultsPerPage"] = input.MaxResultCount.ToString();
+            if (input.SkipCount != 0)
+                query["Page"] = ((input.SkipCount / input.MaxResultCount) + 1).ToString();
 
             builder.Query = query.ToString();
             return builder.ToString();
-        }
-
-        public Task<int> GetAllCountAsync(GetAllJobsInput input)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -41,12 +41,12 @@ namespace myvetjob.Jobs
                 MaxResultCount = input.MaxResultCount,
                 Sorting = input.Sorting,
             };
-            //we should update getAllAsync to include the total count so we avoid making two DB calls
+            
             var localJobs = await _jobManager.GetAllAsync(getAllJobsInput);
             var usaJobs = await _usaJobsManager.GetAllAsync(getAllJobsInput);
-            var allJobs = localJobs.Concat(usaJobs).ToList();
-            var totalJobs = await _jobManager.GetAllCountAsync(getAllJobsInput) + usaJobs.Count(); //we can avoid the extra call since our UI doesn't need the total count
-            return new PagedResultDto<JobDto>(totalJobs, ObjectMapper.Map<List<JobDto>>(allJobs));
+            var allJobs = localJobs.Concat(usaJobs.Items).ToList();
+            var totalJobsCount = await _jobManager.GetAllCountAsync(getAllJobsInput) + usaJobs.TotalCount; 
+            return new PagedResultDto<JobDto>(totalJobsCount, ObjectMapper.Map<List<JobDto>>(allJobs));
         }
 
     }
