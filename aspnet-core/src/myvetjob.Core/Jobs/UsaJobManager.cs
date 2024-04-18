@@ -15,13 +15,23 @@ namespace myvetjob.Jobs
     public class UsaJobManager : DomainService, IUsaJobManager
     {
         private readonly HttpClient _httpClient;
+        private static readonly string USAJOBS_SEARCH_URL;
+        private static readonly string USAJOBS_AUTH_KEY;
+        private static readonly string USAJOBS_USER_AGENT;
+
+        static UsaJobManager()
+        {
+            USAJOBS_AUTH_KEY = Environment.GetEnvironmentVariable("USAJOBS_AUTH_KEY");
+            USAJOBS_USER_AGENT = Environment.GetEnvironmentVariable("USAJOBS_USER_AGENT");
+            USAJOBS_SEARCH_URL = Environment.GetEnvironmentVariable("USAJOBS_SEARCH_URL");
+        }
 
         public UsaJobManager(HttpClient httpClient)
         {
             _httpClient = httpClient;
             _httpClient.DefaultRequestHeaders.Add("Host", "data.usajobs.gov");
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", Environment.GetEnvironmentVariable("USAJOBS_USER_AGENT"));
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization-Key", Environment.GetEnvironmentVariable("USAJOBS_AUTH_KEY"));
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", USAJOBS_USER_AGENT);
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization-Key", USAJOBS_AUTH_KEY);
         }
 
         /// <summary>
@@ -31,7 +41,7 @@ namespace myvetjob.Jobs
         /// <returns>The unexpired job with the specified ID, or null if not found.</returns>
         public async Task<Job> GetAsync(int jobId)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://data.usajobs.gov/api/search?JobID={jobId}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{USAJOBS_SEARCH_URL}?JobID={jobId}");
 
             var response = await _httpClient.SendAsync(request);
 
@@ -106,7 +116,7 @@ namespace myvetjob.Jobs
 
         private static string BuildUrl(GetAllJobsInput input)
         {
-            var builder = new UriBuilder("https://data.usajobs.gov/api/search");
+            var builder = new UriBuilder(USAJOBS_SEARCH_URL);
             var query = HttpUtility.ParseQueryString(builder.Query);
 
             // Add query parameters based on the input
