@@ -38,5 +38,10 @@ namespace myvetjob.Web.Controllers
                 return View();
             }
         }
+
+        public IActionResult SkillsMatch()
+        {
+            return View();
+        }
     }
 }

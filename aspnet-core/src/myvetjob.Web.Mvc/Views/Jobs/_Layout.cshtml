@@ -32,12 +32,17 @@
      MyVetJob
   </a>
   <ul class="nav justify-content-end">
-    <li class="nav-item mr-3">
+    @* <li class="nav-item mr-3">
       <a class="nav-link btn btn-outline-success" href="@Url.Action("Login", "Account")">@L("Login")</a>
+    </li> *@
+    <li class="nav-item mr-3">
+      <a class="nav-link btn btn-outline-danger" href="@Url.Action("Index", "Jobs")">@L("Find a Job")</a>
     </li>
     <li class="nav-item mr-3">
+      <a class="nav-link btn btn-outline-primary" href="@Url.Action("SkillsMatch", "Jobs")">@L("Vet to Civilian Skills Match")</a>
+    @* <li class="nav-item mr-3">
       <a class="nav-link btn btn-outline-danger" href="#">@L("PostJob")</a>
-    </li>
+    </li> *@
 </nav>
 <body class="hold-transition">
 
