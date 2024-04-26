@@ -28,11 +28,11 @@ namespace myvetjob.Web.Startup
                         // Set TracesSampleRate to 1.0 to capture 100%
                         // of transactions for performance monitoring.
                         // We recommend adjusting this value in production
-                        o.TracesSampleRate = 1.0;
+                        o.TracesSampleRate = 0.8;
                         // Sample rate for profiling, applied on top of othe TracesSampleRate,
                         // e.g. 0.2 means we want to profile 20 % of the captured transactions.
                         // We recommend adjusting this value in production.
-                        o.ProfilesSampleRate = 1.0;
+                        o.ProfilesSampleRate = 0.8;
                         // Requires NuGet package: Sentry.Profiling
                         // Note: By default, the profiler is initialized asynchronously. This can
                         // be tuned by passing a desired initialization timeout to the constructor.
