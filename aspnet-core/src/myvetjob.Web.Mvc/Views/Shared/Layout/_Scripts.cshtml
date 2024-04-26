@@ -61,6 +61,16 @@
 
 <environment names="Staging,Production">
     <script src="~/view-resources/Views/_Bundles/shared-layout.min.js" asp-append-version="true"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6X99WD8V8L"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-6X99WD8V8L');
+    </script>
+
     <script
         src="https://js.sentry-cdn.com/6626afb581e00788ac38ad63d5c4667d.min.js"
         crossorigin="anonymous">
