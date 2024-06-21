@@ -2,16 +2,9 @@ $(function () {
   "use strict";
   var page = 1; // Start from page 1
   var inProgress = false; // To prevent multiple simultaneous requests
-  var searchParams = new URLSearchParams(window.location.search);
-  searchParams.forEach(function(value, key) {
-    var formElement = $("#jobFilterForm [name='" + key + "']");
-    if (formElement) {
-      formElement.val(value);
-    }
-  });
+  const pageSize = 10;
 
-  // Optionally, trigger the form submission to load the initial set of jobs based on URL parameters
-  //$("#jobFilterForm").submit();
+  updateFormWithSearchParams();
 
   $(window).scroll(function () {
     if (
@@ -25,45 +18,41 @@ $(function () {
 
   $("#jobFilterForm").on("submit", function (e) {
     e.preventDefault();
-    abp.ui.setBusy($(".job-openings"));
-    var form = $(this);
-    var url = form.attr("action");
-    var serializedData = form.serialize();
-
-    // Update the URL with form data as query parameters
-    var newUrl = url + "?" + serializedData;
-    window.history.pushState({ path: newUrl }, '', newUrl);
-
-
     page = 1; // Reset the page variable
-
-    $.ajax({
-      type: "GET",
-      url: url,
-      data: serializedData, // This will include all the form fields in the AJAX request
-      success: function (data) {
-        // Insert the HTML returned by the server into the existing list of jobs
-        $(".job-openings").html(data);
-      },
-      complete: function () {
-        abp.ui.clearBusy($(".job-openings"));
-      },
-    });
+    loadMoreJobs();
   });
+
+  function updateFormWithSearchParams() {
+    var searchParams = new URLSearchParams(window.location.search);
+    searchParams.forEach(function (value, key) {
+      var formElement = $("#jobFilterForm [name='" + key + "']");
+      if (formElement) {
+        formElement.val(value);
+      }
+    });
+  }
+
+  function buildUrl(formSelector, page, pageSize) {
+    var formData = $(formSelector).serialize();
+    var dataObject = new URLSearchParams(formData);
+  
+    dataObject.append("skipCount", (page - 1) * pageSize);
+    dataObject.append("maxResultCount", pageSize);
+  
+    return $(formSelector).attr("action") + "?" + dataObject.toString();
+  }
 
   function loadMoreJobs() {
     inProgress = true;
-    abp.ui.setBusy($(".job-openings")); // Set the card body as busy during the request
+    // Clear existing jobs if this is the first page
+    if (page === 1) {
+      $(".job-openings").empty();
+    }
+    abp.ui.setBusy($(".job-openings")); 
 
-    var formData = $("#jobFilterForm").serialize();
-    var dataObject = new URLSearchParams(formData);
 
-    dataObject.append("skipCount", (page - 1) * 10);
-    dataObject.append("maxResultCount", 10); // Replace 10 with your actual page size
-
-    var newUrl = $("#jobFilterForm").attr("action") + "?" + dataObject.toString();
+    var newUrl = buildUrl("#jobFilterForm", page, pageSize); 
   
-
     $.ajax({
       url: newUrl,
       //data: dataObject.toString(),
