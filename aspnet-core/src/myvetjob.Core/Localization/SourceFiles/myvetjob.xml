@@ -119,5 +119,6 @@
     <text name="UsersActivation">Users activation</text>
     <text name="FindAJob">Find a job</text>
     <text name="VetToCivilianSkillsMatch">Vet to Civilian Skills Match</text>
+    <text name="Jobs">Jobs</text>
   </texts>
 </localizationDictionary>

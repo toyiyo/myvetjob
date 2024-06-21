@@ -61,9 +61,12 @@ $(function () {
     dataObject.append("skipCount", (page - 1) * 10);
     dataObject.append("maxResultCount", 10); // Replace 10 with your actual page size
 
+    var newUrl = $("#jobFilterForm").attr("action") + "?" + dataObject.toString();
+    window.history.pushState({ path: newUrl }, '', newUrl);
+
     $.ajax({
-      url: "/Jobs/Index",
-      data: dataObject.toString(),
+      url: newUrl,
+      //data: dataObject.toString(),
       success: function (data) {
         // Insert the HTML returned by the server into the existing list of jobs
         $(".job-openings").append(data);
