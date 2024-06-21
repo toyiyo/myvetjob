@@ -62,14 +62,21 @@ $(function () {
     dataObject.append("maxResultCount", 10); // Replace 10 with your actual page size
 
     var newUrl = $("#jobFilterForm").attr("action") + "?" + dataObject.toString();
-    window.history.pushState({ path: newUrl }, '', newUrl);
+  
 
     $.ajax({
       url: newUrl,
       //data: dataObject.toString(),
       success: function (data) {
-        // Insert the HTML returned by the server into the existing list of jobs
-        $(".job-openings").append(data);
+        if (data.trim()) {
+          // Insert the HTML returned by the server into the existing list of jobs
+          $(".job-openings").append(data);
+          //update the URL with the new page number, only if new data was loaded
+          window.history.pushState({ path: newUrl }, '', newUrl);
+        } else {
+          console.log("No more jobs to load.");
+          page--; // Decrement page since no new data was loaded
+        }
         inProgress = false;
       },
       complete: function () {
