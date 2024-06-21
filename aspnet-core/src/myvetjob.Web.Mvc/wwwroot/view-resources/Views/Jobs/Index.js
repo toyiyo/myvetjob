@@ -18,13 +18,19 @@ $(function () {
     abp.ui.setBusy($(".job-openings"));
     var form = $(this);
     var url = form.attr("action");
+    var serializedData = form.serialize();
+
+    // Update the URL with form data as query parameters
+    var newUrl = url + "?" + serializedData;
+    window.history.pushState({ path: newUrl }, '', newUrl);
+
 
     page = 1; // Reset the page variable
 
     $.ajax({
       type: "GET",
       url: url,
-      data: form.serialize(), // This will include all the form fields in the AJAX request
+      data: serializedData, // This will include all the form fields in the AJAX request
       success: function (data) {
         // Insert the HTML returned by the server into the existing list of jobs
         $(".job-openings").html(data);
