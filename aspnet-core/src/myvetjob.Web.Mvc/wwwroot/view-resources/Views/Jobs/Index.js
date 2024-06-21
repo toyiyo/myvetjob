@@ -2,6 +2,16 @@ $(function () {
   "use strict";
   var page = 1; // Start from page 1
   var inProgress = false; // To prevent multiple simultaneous requests
+  var searchParams = new URLSearchParams(window.location.search);
+  searchParams.forEach(function(value, key) {
+    var formElement = $("#jobFilterForm [name='" + key + "']");
+    if (formElement) {
+      formElement.val(value);
+    }
+  });
+
+  // Optionally, trigger the form submission to load the initial set of jobs based on URL parameters
+  //$("#jobFilterForm").submit();
 
   $(window).scroll(function () {
     if (
