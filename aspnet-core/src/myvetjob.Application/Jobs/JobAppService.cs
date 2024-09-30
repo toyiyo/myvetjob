@@ -2,6 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using System.Linq;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using Abp.Domain.Entities;
 
 namespace myvetjob.Jobs
 {
@@ -16,9 +20,29 @@ namespace myvetjob.Jobs
             _jobManager = jobManager;
             _usaJobsManager = usaJobsManager;
         }
-        public async Task<JobDto> GetActiveJobByIdAsync(int jobId)
+        public async Task<JobDto> GetActiveJobByIdAsync(int jobId, string position, string companyName)
         {
-            var job = await _jobManager.GetAsync(jobId);
+            // Query the local job manager
+            var localJobTask = _jobManager.GetAsync(jobId);
+
+            // Query the USA jobs manager
+            var usaJobTask = _usaJobsManager.GetAsync(position, companyName);
+
+            // Await both tasks to complete
+            await Task.WhenAll(localJobTask, usaJobTask);
+
+            var localJob = localJobTask.Result;
+            var usaJob = usaJobTask.Result;
+
+            // Combine results, preferring local job if available
+            var job = localJob ?? usaJob;
+
+            if (job == null)
+            {
+                // Handle the case where no job is found. This could be returning null or throwing an exception.
+                throw new EntityNotFoundException($"A job with the ID {jobId} was not found in any source.");
+            }
+
             return ObjectMapper.Map<JobDto>(job);
         }
         /// <summary>
@@ -41,11 +65,11 @@ namespace myvetjob.Jobs
                 MaxResultCount = input.MaxResultCount,
                 Sorting = input.Sorting,
             };
-            
+
             var localJobs = await _jobManager.GetAllAsync(getAllJobsInput);
             var usaJobs = await _usaJobsManager.GetAllAsync(getAllJobsInput);
             var allJobs = localJobs.Concat(usaJobs.Items).ToList();
-            var totalJobsCount = await _jobManager.GetAllCountAsync(getAllJobsInput) + usaJobs.TotalCount; 
+            var totalJobsCount = await _jobManager.GetAllCountAsync(getAllJobsInput) + usaJobs.TotalCount;
             return new PagedResultDto<JobDto>(totalJobsCount, ObjectMapper.Map<List<JobDto>>(allJobs));
         }
 

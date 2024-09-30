@@ -39,9 +39,9 @@ namespace myvetjob.Jobs
         /// </summary>
         /// <param name="jobId">The ID of the job to retrieve.</param>
         /// <returns>The unexpired job with the specified ID, or null if not found.</returns>
-        public async Task<Job> GetAsync(int jobId)
+        public async Task<Job> GetAsync(string Position, string CompanyName)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{USAJOBS_SEARCH_URL}?JobID={jobId}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{USAJOBS_SEARCH_URL}?PositionTitle={Position}&OrganizationName={CompanyName}");
 
             var response = await _httpClient.SendAsync(request);
 
@@ -108,7 +108,8 @@ namespace myvetjob.Jobs
                                 minSalary: Convert.ToDecimal(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MinimumRange),
                                 maxSalary: decimal.Parse(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MaximumRange),
                                 applyUrl: usaJob.MatchedObjectDescriptor.ApplyURI.FirstOrDefault(),
-                                expireDays: usaJob.MatchedObjectDescriptor.ApplicationCloseDate.Subtract(DateTime.Today).Days
+                                expireDays: usaJob.MatchedObjectDescriptor.ApplicationCloseDate.Subtract(DateTime.Today).Days,
+                                ExternalId: usaJob.MatchedObjectId
                             );
             job.CreationTime = usaJob.MatchedObjectDescriptor.PublicationStartDate;
             return job;

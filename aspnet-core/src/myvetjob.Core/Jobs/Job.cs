@@ -59,6 +59,9 @@ namespace myvetjob.Jobs
         public OrderStatus OrderStatus { get; protected set; }
         public int ApplicationCount { get; protected set; }
         public DateTime ExpireDate { get; protected set; }
+        //external id for the job that is indexed so we can search for it
+        public string ExternalId { get; protected set; }
+
         /// <summary>
         /// We don't make constructor public and forcing to create events using <see cref="Create"/> method.
         /// But constructor can not be private since it's used by EntityFramework.
@@ -68,7 +71,7 @@ namespace myvetjob.Jobs
         {
         }
 
-        public static Job Create(User user, string companyName, string position, string description, EmploymentType employmentType, string jobLocation, decimal minSalary, decimal maxSalary, string applyUrl, int expireDays = DefaultExpireDays)
+        public static Job Create(User user, string companyName, string position, string description, EmploymentType employmentType, string jobLocation, decimal minSalary, decimal maxSalary, string applyUrl, int expireDays = DefaultExpireDays, string ExternalId = "")
         {
             if (string.IsNullOrWhiteSpace(companyName)) throw new ArgumentException("CompanyName cannot be null or whitespace.", nameof(companyName));
             if (string.IsNullOrWhiteSpace(position)) throw new ArgumentException("Position cannot be null or whitespace.", nameof(position));
@@ -96,7 +99,8 @@ namespace myvetjob.Jobs
                 ApplyUrl = applyUrl,
                 OrderStatus = OrderStatus.Pending,
                 ApplicationCount = 0,
-                ExpireDate = Clock.Now.AddDays(expireDays)
+                ExpireDate = Clock.Now.AddDays(expireDays),
+                ExternalId = ExternalId
             };
 
             return job;

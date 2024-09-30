@@ -9,5 +9,6 @@
         public const string Roles = "Roles"; 
         public const string Jobs = "Jobs";
         public const string SkillsMatch = "SkillsMatch";
+        public const string JobDetails = "JobDetails";
     }
 }

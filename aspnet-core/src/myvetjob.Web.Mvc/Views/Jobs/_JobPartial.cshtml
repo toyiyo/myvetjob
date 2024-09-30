@@ -13,7 +13,7 @@
         <div>
             <h4 class="h5">
                 <div class="text-dark">
-                    <a rel="noopener noreferrer" class="font-weight-bold " id="@job.Id" href="/jobs/@job.Id">@job.Position</a>
+                    <a rel="noopener noreferrer" class="font-weight-bold " id="@job.Id" href="/jobs/@(job.Id == 0 ? job.ExternalId : job.Id)?position=@job.Position">@job.Position</a>
                 </div>
             </h4>
             <div class="text-muted">@job.CompanyName</div>

@@ -6,7 +6,7 @@ namespace myvetjob.Jobs
 {
     public interface IUsaJobManager
     {
-        Task<Job> GetAsync(int jobId);
+        Task<Job> GetAsync(string Position, string CompanyName);
         Task<PagedResultDto<Job>> GetAllAsync(GetAllJobsInput input);
     }
 }

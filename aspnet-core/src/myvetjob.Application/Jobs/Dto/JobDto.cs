@@ -18,5 +18,6 @@ namespace myvetjob.Jobs
         public string ApplyUrl { get; set; }
         public DateTime ExpireDate { get; set; }
         public DateTime CreationTime { get; set; }
+        public string ExternalId { get; set; }
     }
 }
