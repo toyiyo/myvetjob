@@ -116,7 +116,7 @@ namespace myvetjob.Jobs
                 query["LocationName"] = input.JobLocation;
             if (input.MinSalary.HasValue)
                 query["RemunerationMinimumAmount"] = input.MinSalary.ToString();
-            if (input.CreatedWithinDays.HasValue)
+            if (input.CreatedWithinDays.HasValue && input.CreatedWithinDays.Value <= 60)
                 query["DatePosted"] = input.CreatedWithinDays.ToString();
             if (input.MaxResultCount != 0)
                 query["ResultsPerPage"] = input.MaxResultCount.ToString();
