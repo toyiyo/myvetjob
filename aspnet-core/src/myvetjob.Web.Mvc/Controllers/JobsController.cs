@@ -43,5 +43,28 @@ namespace myvetjob.Web.Controllers
         {
             return View();
         }
+
+        //set url to /jobs/{jobId}
+        /// <summary>
+        /// Displays the details of a job.
+        /// </summary>
+        /// <param name="jobId">The ID of the job.</param>
+        /// <returns>The view displaying the job details.</returns>
+        [Route("jobs/{jobId}")]
+        public async Task<IActionResult> JobDetails(string jobId, GetActiveJobsInput input)
+        {
+            try
+            {
+                var job = await _jobAppService.GetActiveJobByIdAsync(jobId, input);
+                return View(job);
+            }
+            catch (ArgumentNullException) { return new NotFoundResult(); }
+            catch (Abp.Domain.Entities.EntityNotFoundException) { return new NotFoundResult(); }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message);
+                return View();
+            }
+        }
     }
 }
