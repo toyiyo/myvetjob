@@ -39,10 +39,10 @@ namespace myvetjob.Jobs
         /// </summary>
         /// <param name="jobId">The ID of the job to retrieve.</param>
         /// <returns>The unexpired job with the specified ID, or null if not found.</returns>
-        public async Task<Job> SearchAsync(string JobId, GetAllJobsInput input)
+        public async Task<Job> SearchAsync(string jobId, GetAllJobsInput input)
         {
             var jobSearchResult = await GetAllAsync(input);
-            var usaJob = jobSearchResult.Items.FirstOrDefault(x => x.ExternalId == JobId);
+            var usaJob = jobSearchResult.Items.FirstOrDefault(x => x.ExternalId == jobId);
             //map the job to our Job entity
             return usaJob;
         }
@@ -95,7 +95,7 @@ namespace myvetjob.Jobs
                                 minSalary: Convert.ToDecimal(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MinimumRange),
                                 maxSalary: decimal.Parse(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MaximumRange),
                                 applyUrl: usaJob.MatchedObjectDescriptor.ApplyURI.FirstOrDefault(),
-                                expireDays: usaJob.MatchedObjectDescriptor.ApplicationCloseDate.Subtract(DateTime.Today).Days,
+                                expireDays: usaJob.MatchedObjectDescriptor.ApplicationCloseDate.Subtract(DateTime.UtcNow.Date).Days,
                                 ExternalId: usaJob.MatchedObjectDescriptor.PositionID
                             );
             job.CreationTime = usaJob.MatchedObjectDescriptor.PublicationStartDate;
@@ -112,7 +112,7 @@ namespace myvetjob.Jobs
                 query["OrganizationName"] = input.CompanyName;
             if (!string.IsNullOrWhiteSpace(input.Position))
                 query["PositionTitle"] = input.Position;
-            if (!string.IsNullOrWhiteSpace(input.JobLocation))
+            if (!string.IsNullOrWhiteSpace(input.JobLocation) && !input.JobLocation.Equals("Multiple Locations", StringComparison.OrdinalIgnoreCase))
                 query["LocationName"] = input.JobLocation;
             if (input.MinSalary.HasValue)
                 query["RemunerationMinimumAmount"] = input.MinSalary.ToString();
