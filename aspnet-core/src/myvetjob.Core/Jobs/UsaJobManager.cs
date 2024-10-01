@@ -39,25 +39,12 @@ namespace myvetjob.Jobs
         /// </summary>
         /// <param name="jobId">The ID of the job to retrieve.</param>
         /// <returns>The unexpired job with the specified ID, or null if not found.</returns>
-        public async Task<Job> GetAsync(string Position, string CompanyName)
+        public async Task<Job> SearchAsync(string JobId, GetAllJobsInput input)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{USAJOBS_SEARCH_URL}?PositionTitle={Position}&OrganizationName={CompanyName}");
-
-            var response = await _httpClient.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception($"Error fetching job: {response.StatusCode}");
-            }
-
-            var content = await response.Content.ReadAsStringAsync();
-            var jobSearchResult = JsonConvert.DeserializeObject<Root>(content);
-
-            var usaJob = jobSearchResult.SearchResult.SearchResultItems.FirstOrDefault();
+            var jobSearchResult = await GetAllAsync(input);
+            var usaJob = jobSearchResult.Items.FirstOrDefault(x => x.ExternalId == JobId);
             //map the job to our Job entity
-            var job = MapUsaJobToJob(usaJob);
-
-            return job;
+            return usaJob;
         }
 
         /// <summary>
@@ -109,7 +96,7 @@ namespace myvetjob.Jobs
                                 maxSalary: decimal.Parse(usaJob.MatchedObjectDescriptor.PositionRemuneration.FirstOrDefault()?.MaximumRange),
                                 applyUrl: usaJob.MatchedObjectDescriptor.ApplyURI.FirstOrDefault(),
                                 expireDays: usaJob.MatchedObjectDescriptor.ApplicationCloseDate.Subtract(DateTime.Today).Days,
-                                ExternalId: usaJob.MatchedObjectId
+                                ExternalId: usaJob.MatchedObjectDescriptor.PositionID
                             );
             job.CreationTime = usaJob.MatchedObjectDescriptor.PublicationStartDate;
             return job;

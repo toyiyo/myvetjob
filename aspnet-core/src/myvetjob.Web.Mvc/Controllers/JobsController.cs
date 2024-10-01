@@ -51,11 +51,11 @@ namespace myvetjob.Web.Controllers
         /// <param name="jobId">The ID of the job.</param>
         /// <returns>The view displaying the job details.</returns>
         [Route("jobs/{jobId}")]
-        public async Task<IActionResult> JobDetails(int jobId, string position, string companyName)
+        public async Task<IActionResult> JobDetails(string jobId, GetActiveJobsInput input)
         {
             try
             {
-                var job = await _jobAppService.GetActiveJobByIdAsync(jobId, position, companyName);
+                var job = await _jobAppService.GetActiveJobByIdAsync(jobId, input);
                 return View(job);
             }
             catch (ArgumentNullException) { return new NotFoundResult(); }

@@ -10,25 +10,56 @@
 }
 
 <div class="container mt-4">
-    <div class="card">
-        <div class="card-header">
-            <h2>@Model.Position</h2>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5>@L("JobDetails")</h5>
-                    <p><strong>@L("JobId"):</strong> @(Model.Id == 0 ? Model.ExternalId : Model.Id)</p>
-                    <p><strong>@L("Description"):</strong> @Model.Description</p>
-                    <p><strong>@L("Location"):</strong> @Model.JobLocation</p>
+    <div class="row">
+        <!-- Main Content Section -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-0">@Model.Position</h2>
+                    </div>
+                    <div>
+                        <h4 class="text-primary">
+                            @Model.MinSalary.ToString("C", CultureInfo.CreateSpecificCulture("en-US")) - @Model.MaxSalary.ToString("C", CultureInfo.CreateSpecificCulture("en-US"))
+                        </h4>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <h5>@L("AdditionalInfo")</h5>
-                    <p><strong>@L("Company"):</strong> @Model.CompanyName</p>
-                    <p><strong>@L("PostedDate"):</strong> @Model.CreationTime.ToString("d", CultureInfo.CurrentCulture)</p>
-                    <p><strong>@L("Salary"):</strong> @Model.MinSalary.ToString("C", CultureInfo.CreateSpecificCulture("en-US")) - @Model.MaxSalary.ToString("C", CultureInfo.CreateSpecificCulture("en-US"))</p>
+                <div class="card-body">
+                    <h5>@L("JobDescription")</h5>
+                    <p>@Model.Description</p>
+
                 </div>
             </div>
+        </div>
+        
+        <!-- Sidebar Section -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <!-- Placeholder for company logo -->
+
+                    <h5>@Model.CompanyName</h5>
+                    <div class="mt-4">
+                        <p><i class="fa fa-map-marker"></i> @Model.JobLocation</p>
+                    </div>
+                    <div class="mt-4">
+                        <p><i class="fa fa-calendar"></i> @Model.ExpireDate.ToString("MMM dd yyyy")</p>
+                    </div>
+                    <div class="mt-4">
+                        <p><i class="fa fa-clock"></i> @((DateTime.Now - Model.CreationTime).Days > 0 ? (DateTime.Now - Model.CreationTime).Days + " days ago" : "Today")</p>   
+                    </div>
+                    <div class="mt-4">
+                        <p><i class="fa fa-funnel-dollar"></i> @Model.EmploymentType.ToString()</p>
+                    </div>
+                    <div class="mt-4">
+                        <p><i class="fa fa-money-bill-wave"></i> @Model.MinSalary.ToString("C", CultureInfo.CreateSpecificCulture("en-US")) - @Model.MaxSalary.ToString("C", CultureInfo.CreateSpecificCulture("en-US"))</p>
+                    </div>
+
+                    <a href="@Model.ApplyUrl" target="_blank" class="btn btn-primary btn-block mb-2">@L("ApplyForJob")</a>
+
+                </div>
+            </div>
+            
         </div>
     </div>
 </div>

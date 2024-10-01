@@ -20,26 +20,29 @@ namespace myvetjob.Jobs
             _jobManager = jobManager;
             _usaJobsManager = usaJobsManager;
         }
-        public async Task<JobDto> GetActiveJobByIdAsync(int jobId, string position, string companyName)
+        public async Task<JobDto> GetActiveJobByIdAsync(string jobId, GetActiveJobsInput input)
         {
-            // Query the local job manager
-            var localJobTask = _jobManager.GetAsync(jobId);
+            Job localJob = null;
+            Job usaJob = null;
+            GetAllJobsInput getAllJobsInput = CreateGetAllJobsInput(input);
 
-            // Query the USA jobs manager
-            var usaJobTask = _usaJobsManager.GetAsync(position, companyName);
-
-            // Await both tasks to complete
-            await Task.WhenAll(localJobTask, usaJobTask);
-
-            var localJob = localJobTask.Result;
-            var usaJob = usaJobTask.Result;
+            if (int.TryParse(jobId, out int localJobId))
+            {
+                // Query the local job manager
+                localJob = await _jobManager.GetAsync(localJobId).ConfigureAwait(false);
+            }
+            else
+            {
+                // Query the USA jobs manager
+                usaJob = await _usaJobsManager.SearchAsync(jobId, getAllJobsInput).ConfigureAwait(false);
+            }
 
             // Combine results, preferring local job if available
             var job = localJob ?? usaJob;
 
-            if (job == null)
+            if (job is null)
             {
-                // Handle the case where no job is found. This could be returning null or throwing an exception.
+                // Handle the case where no job is found
                 throw new EntityNotFoundException($"A job with the ID {jobId} was not found in any source.");
             }
 
@@ -51,7 +54,18 @@ namespace myvetjob.Jobs
         /// <returns></returns>
         public async Task<PagedResultDto<JobDto>> GetActiveJobsAsync(GetActiveJobsInput input)
         {
-            var getAllJobsInput = new GetAllJobsInput
+            GetAllJobsInput getAllJobsInput = CreateGetAllJobsInput(input);
+
+            var localJobs = await _jobManager.GetAllAsync(getAllJobsInput);
+            var usaJobs = await _usaJobsManager.GetAllAsync(getAllJobsInput);
+            var allJobs = localJobs.Concat(usaJobs.Items).ToList();
+            var totalJobsCount = await _jobManager.GetAllCountAsync(getAllJobsInput) + usaJobs.TotalCount;
+            return new PagedResultDto<JobDto>(totalJobsCount, ObjectMapper.Map<List<JobDto>>(allJobs));
+        }
+
+        private static GetAllJobsInput CreateGetAllJobsInput(GetActiveJobsInput input)
+        {
+            return new GetAllJobsInput
             {
                 CompanyName = input.CompanyName,
                 Position = input.Position,
@@ -65,13 +79,6 @@ namespace myvetjob.Jobs
                 MaxResultCount = input.MaxResultCount,
                 Sorting = input.Sorting,
             };
-
-            var localJobs = await _jobManager.GetAllAsync(getAllJobsInput);
-            var usaJobs = await _usaJobsManager.GetAllAsync(getAllJobsInput);
-            var allJobs = localJobs.Concat(usaJobs.Items).ToList();
-            var totalJobsCount = await _jobManager.GetAllCountAsync(getAllJobsInput) + usaJobs.TotalCount;
-            return new PagedResultDto<JobDto>(totalJobsCount, ObjectMapper.Map<List<JobDto>>(allJobs));
         }
-
     }
 }

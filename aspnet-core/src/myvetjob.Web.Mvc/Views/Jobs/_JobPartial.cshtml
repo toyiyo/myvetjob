@@ -12,9 +12,19 @@
         </div>
         <div>
             <h4 class="h5">
-                <div class="text-dark">
-                    <a rel="noopener noreferrer" class="font-weight-bold " id="@job.Id" href="/jobs/@(job.Id == 0 ? job.ExternalId : job.Id)?position=@job.Position">@job.Position</a>
-                </div>
+            @{
+                var jobUrl = $"/jobs/{(job.Id == 0 ? job.ExternalId : job.Id)}" +
+                            $"?position={job.Position}" +
+                            $"&companyName={job.CompanyName}" +
+                            $"&jobLocation={job.JobLocation}" +
+                            $"&employmentType={job.EmploymentType}" +
+                            $"&minSalary={job.MinSalary}" +
+                            $"&createdWithinDays={(DateTime.UtcNow - job.CreationTime).Days}";
+            }
+
+            <div class="text-dark">
+                <a rel="noopener noreferrer" class="font-weight-bold" id="@job.Id" href="@jobUrl">@job.Position</a>
+            </div>
             </h4>
             <div class="text-muted">@job.CompanyName</div>
             <div class="d-flex flex-wrap pt-2 text-muted small">
