@@ -120,5 +120,8 @@
     <text name="FindAJob">Find a job</text>
     <text name="VetToCivilianSkillsMatch">Vet to Civilian Skills Match</text>
     <text name="Jobs">Jobs</text>
+    <text name="JobDetails">Job details</text>
+    <text name="JobDescription">Job description</text>
+    <text name="ApplyForJob">Apply</text>
   </texts>
 </localizationDictionary>
