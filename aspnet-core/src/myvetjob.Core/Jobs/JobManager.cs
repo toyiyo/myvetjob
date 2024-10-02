@@ -41,17 +41,19 @@ namespace myvetjob.Jobs
         [UnitOfWork]
         public async Task<IReadOnlyList<Job>> GetAllAsync(GetAllJobsInput input)
         {
-            return await GetJobsQuery(input)
-            .OrderBy<Job>(input?.Sorting ?? "CreationTime DESC") //at some point we'll have ranking implemented
+            var jobsQuery = GetJobsQuery(input)
+            .OrderBy<Job>(input?.Sorting ?? "CreationTime DESC")
             .Skip(input?.SkipCount ?? 0)
-            .Take(input?.MaxResultCount ?? int.MaxValue)
-            .ToListAsync();
+            .Take(input?.MaxResultCount ?? int.MaxValue);
+
+            return await jobsQuery.ToListAsync();
         }
 
         [UnitOfWork]
         public async Task<int> GetAllCountAsync(GetAllJobsInput input)
         {
-            return await GetJobsQuery(input).CountAsync();
+            var jobsQuery = GetJobsQuery(input);
+            return await jobsQuery.CountAsync();
         }
 
 
