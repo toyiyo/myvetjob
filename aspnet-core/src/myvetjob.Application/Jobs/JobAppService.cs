@@ -55,16 +55,12 @@ namespace myvetjob.Jobs
         public async Task<PagedResultDto<JobDto>> GetActiveJobsAsync(GetActiveJobsInput input)
         {
             GetAllJobsInput getAllJobsInput = CreateGetAllJobsInput(input);
-            var localJobsTask = _jobManager.GetAllAsync(getAllJobsInput);
-            var usaJobsTask = _usaJobsManager.GetAllAsync(getAllJobsInput);
-            var localJobsCountTask = _jobManager.GetAllCountAsync(getAllJobsInput);
-            
-            await Task.WhenAll(localJobsTask, usaJobsTask, localJobsCountTask);
-            
-            var localJobs = await localJobsTask;
-            var usaJobs = await usaJobsTask;
+            var localJobs = await _jobManager.GetAllAsync(getAllJobsInput);
+            var usaJobs = await _usaJobsManager.GetAllAsync(getAllJobsInput);
+            var localJobsCount = await _jobManager.GetAllCountAsync(getAllJobsInput);
+
             var allJobs = localJobs.Concat(usaJobs.Items).ToList();
-            var totalJobsCount = await localJobsCountTask + usaJobs.TotalCount;
+            var totalJobsCount = localJobsCount + usaJobs.TotalCount;
 
             return new PagedResultDto<JobDto>(totalJobsCount, ObjectMapper.Map<List<JobDto>>(allJobs));
         }
