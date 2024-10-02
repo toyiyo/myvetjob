@@ -21,7 +21,7 @@ namespace myvetjob.Web.Controllers
             try
             {
                 var jobs = await _jobAppService.GetActiveJobsAsync(input);
-                if (Request.IsAjaxRequest())
+                if (Request.IsAjaxRequest() && jobs != null)
                 {
                     return PartialView("_JobPartial", jobs);
                 }
