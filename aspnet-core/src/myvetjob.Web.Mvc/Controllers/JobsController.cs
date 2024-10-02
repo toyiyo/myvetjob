@@ -39,11 +39,6 @@ namespace myvetjob.Web.Controllers
             }
         }
 
-        public IActionResult SkillsMatch()
-        {
-            return View();
-        }
-
         //set url to /jobs/{jobId}
         /// <summary>
         /// Displays the details of a job.
