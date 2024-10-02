@@ -48,9 +48,10 @@ namespace myvetjob.Jobs
             .ToListAsync();
         }
 
-        public Task<int> GetAllCountAsync(GetAllJobsInput input)
+        [UnitOfWork]
+        public async Task<int> GetAllCountAsync(GetAllJobsInput input)
         {
-            return GetJobsQuery(input).CountAsync();
+            return await GetJobsQuery(input).CountAsync();
         }
 
 

@@ -19,7 +19,8 @@
                             $"&jobLocation={job.JobLocation}" +
                             $"&employmentType={job.EmploymentType}" +
                             $"&minSalary={job.MinSalary}" +
-                            $"&createdWithinDays={(DateTime.UtcNow - job.CreationTime).Days}";
+                            $"&createdWithinDays={(DateTime.UtcNow - job.CreationTime).Days}" +
+                            $"&maxResultCount=100";
             }
 
             <div class="text-dark">
