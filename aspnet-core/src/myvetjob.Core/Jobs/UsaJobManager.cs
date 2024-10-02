@@ -106,13 +106,27 @@ namespace myvetjob.Jobs
         {
             var builder = new UriBuilder(USAJOBS_SEARCH_URL);
             var query = HttpUtility.ParseQueryString(builder.Query);
+            var excludedWords = new List<string>
+            {
+                "multiple",
+                "various",
+                "varied",
+                "several",
+                "diverse",
+                "numerous",
+                "different",
+                "assorted",
+                "miscellaneous",
+                "sundry"
+            };
 
             // Add query parameters based on the input
             if (!string.IsNullOrWhiteSpace(input.CompanyName))
                 query["OrganizationName"] = input.CompanyName;
             if (!string.IsNullOrWhiteSpace(input.Position))
                 query["PositionTitle"] = input.Position;
-            if (!string.IsNullOrWhiteSpace(input.JobLocation) && !input.JobLocation.Equals("Multiple Locations", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(input.JobLocation) &&
+                !excludedWords.Any(word => input.JobLocation.Contains(word, StringComparison.OrdinalIgnoreCase)))
                 query["LocationName"] = input.JobLocation;
             if (input.MinSalary.HasValue)
                 query["RemunerationMinimumAmount"] = input.MinSalary.ToString();
