@@ -112,7 +112,8 @@ namespace myvetjob.Jobs
                 query["OrganizationName"] = input.CompanyName;
             if (!string.IsNullOrWhiteSpace(input.Position))
                 query["PositionTitle"] = input.Position;
-            if (!string.IsNullOrWhiteSpace(input.JobLocation) && !input.JobLocation.Equals("Multiple Locations", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(input.JobLocation) &&
+                !ExcludedWords.Any(word => input.JobLocation.Contains(word, StringComparison.OrdinalIgnoreCase)))
                 query["LocationName"] = input.JobLocation;
             if (input.MinSalary.HasValue)
                 query["RemunerationMinimumAmount"] = input.MinSalary.ToString();
@@ -126,5 +127,23 @@ namespace myvetjob.Jobs
             builder.Query = query.ToString();
             return builder.ToString();
         }
+
+        private static readonly HashSet<string> ExcludedWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "multiple",
+            "various",
+            "varied",
+            "several",
+            "diverse",
+            "numerous",
+            "different",
+            "assorted",
+            "miscellaneous",
+            "sundry",
+            "throughout",
+            "duty locations",
+            "locations",
+            "nationwide"
+        };
     }
 }
