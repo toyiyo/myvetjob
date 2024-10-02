@@ -143,7 +143,8 @@ namespace myvetjob.Jobs
             "throughout",
             "duty locations",
             "locations",
-            "nationwide"
+            "nationwide",
+            "wide"
         };
     }
 }
