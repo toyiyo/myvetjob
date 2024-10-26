@@ -6,15 +6,12 @@ $(function () {
 
   updateFormWithSearchParams();
 
-  $(window).scroll(function () {
-    if (
-      $(window).scrollTop() == $(document).height() - $(window).height() &&
-      !inProgress
-    ) {
+  $("#loadMoreButton").on("click", function () { 
+    if (!inProgress) {
       page++;
       loadMoreJobs();
     }
-  });
+  } );
 
   $("#jobFilterForm").on("submit", function (e) {
     e.preventDefault();
@@ -49,7 +46,6 @@ $(function () {
       $(".job-openings").empty();
     }
     abp.ui.setBusy($(".job-openings")); 
-
 
     var newUrl = buildUrl("#jobFilterForm", page, pageSize); 
   
